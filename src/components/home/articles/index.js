@@ -1,17 +1,36 @@
-import { useCallback, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { RefreshControl, ScrollView } from "react-native";
-import { articles } from "../../../fake-data";
+import { get } from "../../../utils/request";
+import { API_URL } from "@env";
 import styles from "./styles";
 import ArticleItem from "./item";
 const Articles = () => {
+  const [articles, setArticles] = useState([]);
+  useEffect(() => {
+    const loadData = async () => {
+      const response = await fetchNews();
+      setArticles(response.data);
+    };
+    loadData();
+  }, []);
+
+  const fetchNews = async () => {
+    const response = await get(`${API_URL}/news`);
+    return response;
+  };
+
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
+    const loadData = async () => {
+      setRefreshing(true);
+      const response = await fetchNews();
+      setArticles(response.data);
       setRefreshing(false);
-    }, 2000);
+    };
+    loadData();
   }, []);
+
   return (
     <ScrollView
       style={styles.container}
@@ -19,9 +38,10 @@ const Articles = () => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      {articles.map((article) => (
-        <ArticleItem key={article.id} article={article} />
-      ))}
+      {articles.length > 0 &&
+        articles.map((article, index) => (
+          <ArticleItem key={article.id} article={article} />
+        ))}
     </ScrollView>
   );
 };

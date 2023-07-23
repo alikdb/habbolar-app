@@ -1,12 +1,12 @@
 import { TouchableOpacity, Text, View } from "react-native";
 import styles from "./styles";
 import { useNavigation } from "@react-navigation/native";
+import timeago from "../../../../utils/timago";
 const ArticleItem = ({ article }) => {
   const navigation = useNavigation();
   const readArticle = () => {
-    navigation.navigate("Article", { article });
+    navigation.navigate("Article", { id: article.id });
   };
-
   return (
     <View style={styles.article}>
       <View>
@@ -20,12 +20,12 @@ const ArticleItem = ({ article }) => {
           <Text style={styles.articleCategory}>{article.category.name}</Text>
         </View>
         <View>
-          <Text style={styles.articleTime}>2 gün önce</Text>
+          <Text style={styles.articleTime}>{timeago(article.createdAt)}</Text>
         </View>
       </View>
       <View style={styles.spacing}></View>
       <View>
-        <Text>{article.content}</Text>
+        <Text>{article.description}</Text>
       </View>
       <View>
         <TouchableOpacity
